@@ -1,34 +1,36 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-const geoOptions = {
-  enableHighAccuracy: false,
-  timeout: 10000,
-  maximumAge: ((1000 * 60) * 60) * 5
-}
-
 class App extends Component {
-  state = {
-    latitude: null,
-    longitude: null
-  }
+  constructor(props) {
+    super(props)
 
-  componentDidMount() {
+    this.state = {
+      latitude: null,
+      longitude: null,
+      errorMessage: null
+    }
+
     window.navigator.geolocation.getCurrentPosition(
       position => this.setState({
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       }),
-      error => console.error(`${error.code}: ${error.message}`),
-      geoOptions
-    );
+      error => this.setState({ errorMessage: error.message })
+    )
   }
 
   render() {
+    if (this.state.errorMessage) {
+      return <div>error: {this.state.errorMessage}</div>
+    } else if (!this.state.latitude) {
+      return  <div>Loading...</div>
+    }
+
     return (
       <>
-        <div>{`Latitude ${this.state.latitude}`}</div>
-        <div>{`Longitude ${this.state.longitude}`}</div>
+        <div>Latitude {this.state.latitude}</div>
+        <div>Longitude {this.state.longitude}</div>
       </>
     )
   }
